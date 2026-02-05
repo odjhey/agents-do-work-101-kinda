@@ -4,5 +4,8 @@
 - [x] support streaming so endpoint can be used by fancy client apps
 - [ ] update stream mode chunk replies later
 - [ ] consider how to handle user authed sessions as part of a full solution
-- [ ] invest in eval rubik harness so better and easier to see quality
+- [ ] invest in eval scoring rubric harness so better and easier to see quality
 - [ ] eval smoke tests in CI?
+- [ ] add more tools
+- [ ] refactor more
+- [ ] build a useful product-ish
