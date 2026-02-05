@@ -1,12 +1,9 @@
-import { LangChainInstrumentation } from "@arizeai/openinference-instrumentation-langchain";
-import { register } from "@arizeai/phoenix-otel";
-import * as CallbackManagerModule from "@langchain/core/callbacks/manager";
+import "./otel-setup";
 import {
 	AIMessage,
 	SystemMessage,
 	type ToolMessage,
 } from "@langchain/core/messages";
-import { tool } from "@langchain/core/tools";
 import {
 	type ConditionalEdgeRouter,
 	END,
@@ -17,21 +14,9 @@ import {
 	StateGraph,
 	StateSchema,
 } from "@langchain/langgraph";
-import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { z } from "zod/v4";
-import { CONFIG } from "./config";
-import { getVectorStore } from "./vector";
-
-const provider = register({ projectName: "agents-do-work-101" });
-
-const lcInstrumentation = new LangChainInstrumentation();
-lcInstrumentation.manuallyInstrument(CallbackManagerModule);
-
-process.on("beforeExit", async () => {
-	await provider.shutdown();
-});
-
-// -----------------------------------------------------------------
+import { chatGptModel } from "./models";
+import { tools, toolsByName } from "./tools";
 
 const State = new StateSchema({
 	messages: MessagesValue,
@@ -50,45 +35,7 @@ const State = new StateSchema({
 	}),
 });
 
-const omniModelChatGptLlm = new ChatOpenAI({
-	model: "gpt-4.1-nano",
-	temperature: 0.1,
-	maxTokens: 1000,
-	timeout: 30_000,
-	apiKey: CONFIG().openaiApiKey,
-});
-
-const embeddingsModel = new OpenAIEmbeddings({
-	model: "text-embedding-3-small",
-	apiKey: CONFIG().openaiApiKey,
-});
-
-const vectorStore = await getVectorStore(embeddingsModel);
-
-const jobPostsSearchTool = tool(
-	async ({ query }) => {
-		const hits = await vectorStore.similaritySearch(query, 5);
-		if (hits.length === 0) {
-			return "No relevant job posts found.";
-		}
-		return [
-			"Relevant job posts found is shown below, it contains job id, job title, and descriptions",
-			hits.map((hit, i) => `${i + 1}. ${hit.pageContent}`).join("\n"),
-		].join("\n");
-	},
-	{
-		name: "job_posts_search",
-		description: "search for available job posts based on user query",
-		schema: z.object({
-			query: z.string().min(1),
-		}),
-	},
-);
-
-const toolsByName = {
-	[jobPostsSearchTool.name]: jobPostsSearchTool,
-};
-const tools = Object.values(toolsByName);
+const omniModelChatGptLlm = chatGptModel;
 const omniModelWithTools = omniModelChatGptLlm.bindTools(tools);
 
 const userIdent: GraphNode<typeof State> = async (state) => {
@@ -108,9 +55,11 @@ const llmCall: GraphNode<typeof State> = async (state) => {
 	const response = await omniModelWithTools.invoke([
 		new SystemMessage(
 			[
-				`You are an expert resourceful job searching assistant. `,
-				`Right now, your goal is to help the user without asking much more questions,`,
-				`You instead rely on tools provided.`,
+				"You are an expert resourceful job searching assistant. ",
+				"Right now, your goal is to help the user without asking much more questions,",
+				"You instead rely on tools provided.",
+				"If at the end we cannot help the user, just say so.",
+				"No need to inquire the user further, but make sure that tool use options is exhausted.",
 				userIdentPartialPrompt,
 			].join("\n"),
 		),
