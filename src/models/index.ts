@@ -2,7 +2,8 @@ import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { CONFIG } from "../config";
 
 export const chatGptModel = new ChatOpenAI({
-	model: "gpt-4.1-nano",
+	//model: "gpt-4.1-nano",
+	model: "gpt-5.1",
 	temperature: 0.1,
 	maxTokens: 1000,
 	timeout: 30_000,
