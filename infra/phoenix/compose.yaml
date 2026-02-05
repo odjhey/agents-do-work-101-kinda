@@ -1,0 +1,13 @@
+services:
+  phoenix:
+    image: docker.io/arizephoenix/phoenix:latest
+    ports:
+      - 6006:6006  # PHOENIX_PORT
+      - 4317:4317  # PHOENIX_GRPC_PORT
+    environment:
+      - PHOENIX_WORKING_DIR=/mnt/data
+    volumes:
+      - phoenix_data:/mnt/data
+volumes:
+  phoenix_data:
+    driver: local
