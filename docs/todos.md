@@ -1,5 +1,8 @@
 - [x] add a rag (with synthetic data of openings)
 - [x] add ways to evaluate agents
+- [x] add endpoint to trigger graph
+- [x] support streaming so endpoint can be used by fancy client apps
+- [ ] update stream mode chunk replies later
 - [ ] consider how to handle user authed sessions as part of a full solution
-- [ ] add endpoint to trigger graph
-- [ ] support streaming so endpoint can be used by fancy client apps
+- [ ] invest in eval rubik harness so better and easier to see quality
+- [ ] eval smoke tests in CI?
