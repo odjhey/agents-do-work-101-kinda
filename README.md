@@ -24,3 +24,4 @@ See the `package.json` scripts
 - `rag/` - Vector DB setup
 - `eval/` - Evaluation scripts
 - `infra/` - Docker compose files
+- `docs/` - Don't trust, always outdated
