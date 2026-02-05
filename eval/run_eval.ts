@@ -24,48 +24,51 @@ function getFinalText(output: any): string {
 
 async function main() {
 	const datasetPath = path.join(process.cwd(), "eval", "job_role_eval.jsonl");
+	const userIdentsPath = path.join(process.cwd(), "eval", "user_idents.jsonl");
 	const cases = readJsonl<EvalCase>(datasetPath);
+	const userIdents = readJsonl<{ name: string; designation: string }>(
+		userIdentsPath,
+	);
 
 	const experiment = `job_role_eval_${new Date().toISOString().slice(0, 10)}`;
 	const rows: any[] = [];
 
 	// matrix
 	for (const promptId of PROMPT_IDS) {
-		for (const c of cases) {
-			const t0 = Date.now();
-			const out = await graph.invoke(
-				{
-					messages: c.messages,
-					llmCalls: 0,
-					// @todo fix this as part of the matrix next time
-					userIdentity: {
-						name: "Johan",
-						designation: "Developer - Erlang and BEAM",
+		for (const ident of userIdents) {
+			for (const c of cases) {
+				const t0 = Date.now();
+				const out = await graph.invoke(
+					{
+						messages: c.messages,
+						llmCalls: 0,
+						userIdentity: { name: ident.name, designation: ident.designation },
 					},
-				},
-				{
-					configurable: { experiment, promptId, evalCaseId: c.id },
-					tags: ["eval", "job-role", "auto-eval", promptId],
-					metadata: { gitSha: process.env.GIT_SHA ?? "local" },
-					runName: "job-role-agent",
-				},
-			);
-			const latencyMs = Date.now() - t0;
+					{
+						configurable: { experiment, promptId, evalCaseId: c.id },
+						tags: ["eval", "job-role", "auto-eval", promptId],
+						metadata: { gitSha: process.env.GIT_SHA ?? "local" },
+						runName: "job-role-agent",
+					},
+				);
+				const latencyMs = Date.now() - t0;
 
-			const finalText = getFinalText(out);
-			// @todo lets create a scoring system next time
-			// const score =
+				const finalText = getFinalText(out);
+				// @todo lets create a scoring system next time
+				// const score =
 
-			rows.push({
-				experiment,
-				promptId,
-				caseId: c.id,
-				latencyMs,
-				llmCalls: out.llmCalls,
-				finalText,
-				// pass: score.pass,
-				// questionMarks: score.questionMarks,
-			});
+				rows.push({
+					experiment,
+					promptId,
+					userIdentityName: ident.name,
+					caseId: c.id,
+					latencyMs,
+					llmCalls: out.llmCalls,
+					finalText,
+					// pass: score.pass,
+					// questionMarks: score.questionMarks,
+				});
+			}
 		}
 	}
 
