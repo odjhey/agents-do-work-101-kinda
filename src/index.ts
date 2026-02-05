@@ -1,4 +1,3 @@
-import "dotenv/config";
 import { LangChainInstrumentation } from "@arizeai/openinference-instrumentation-langchain";
 import { register } from "@arizeai/phoenix-otel";
 import * as CallbackManagerModule from "@langchain/core/callbacks/manager";
@@ -18,20 +17,10 @@ import {
 	StateGraph,
 	StateSchema,
 } from "@langchain/langgraph";
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatOpenAI, OpenAIEmbeddings } from "@langchain/openai";
 import { z } from "zod/v4";
-
-const CONFIG = () => {
-	const schema = z.object({
-		openaiApiKey: z.string().min(1, "OPENAI_API_KEY is required"),
-	});
-
-	const parsed = schema.parse({
-		openaiApiKey: process.env.OPENAI_API_KEY,
-	});
-
-	return parsed;
-};
+import { CONFIG } from "./config";
+import { getVectorStore } from "./vector";
 
 const provider = register({ projectName: "agents-do-work-101" });
 
@@ -69,18 +58,27 @@ const omniModelChatGptLlm = new ChatOpenAI({
 	apiKey: CONFIG().openaiApiKey,
 });
 
-const rolesLibraryTool = tool(
-	({ query }) => {
-		// In a real-world scenario, this would query a database/RAG or some api
-		return `Available roles and projects
-		- PHP Developer for project XYZ - Backend development using PHP and MySQL.
-		- Node JS Backend with typescript for project ABC - Building scalable backend services for a real estate company.
-		- Elixir Developer for project TELCO - Working on high-performance applications using Elixir and Phoenix for a telco company.
-		`;
+const embeddingsModel = new OpenAIEmbeddings({
+	model: "text-embedding-3-small",
+	apiKey: CONFIG().openaiApiKey,
+});
+
+const vectorStore = await getVectorStore(embeddingsModel);
+
+const jobPostsSearchTool = tool(
+	async ({ query }) => {
+		const hits = await vectorStore.similaritySearch(query, 5);
+		if (hits.length === 0) {
+			return "No relevant job posts found.";
+		}
+		return [
+			"Relevant job posts found is shown below, it contains job id, job title, and descriptions",
+			hits.map((hit, i) => `${i + 1}. ${hit.pageContent}`).join("\n"),
+		].join("\n");
 	},
 	{
-		name: "roles_projects_lookup",
-		description: "look into available roles and projects we have.",
+		name: "job_posts_search",
+		description: "search for available job posts based on user query",
 		schema: z.object({
 			query: z.string().min(1),
 		}),
@@ -88,7 +86,7 @@ const rolesLibraryTool = tool(
 );
 
 const toolsByName = {
-	[rolesLibraryTool.name]: rolesLibraryTool,
+	[jobPostsSearchTool.name]: jobPostsSearchTool,
 };
 const tools = Object.values(toolsByName);
 const omniModelWithTools = omniModelChatGptLlm.bindTools(tools);
@@ -110,7 +108,9 @@ const llmCall: GraphNode<typeof State> = async (state) => {
 	const response = await omniModelWithTools.invoke([
 		new SystemMessage(
 			[
-				"You are an expert adviser based on user preferences and information you have. You care not to overfit the user's information when making decisions.",
+				`You are an expert resourceful job searching assistant. `,
+				`Right now, your goal is to help the user without asking much more questions,`,
+				`You instead rely on tools provided.`,
 				userIdentPartialPrompt,
 			].join("\n"),
 		),
@@ -183,8 +183,8 @@ await graph.invoke({
 	messages: [
 		{
 			role: "user",
-			content:
-				"Could help me with a next project we should take within the company",
+			content: "Could help me search a proper job role fit for me?",
+			// content: "What tools are available at your disposal?",
 		},
 	],
 });
