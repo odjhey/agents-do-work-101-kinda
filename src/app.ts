@@ -17,11 +17,15 @@ const config: MyConfig = {
 
 await graph.invoke(
 	{
+		llmCalls: 0,
+		userIdentity: {
+			name: "Johan",
+			designation: "Developer - Erlang and BEAM",
+		},
 		messages: [
 			{
 				role: "user",
 				content: "Could help me search a proper job role fit for me?",
-				// content: "What tools are available at your disposal?",
 			},
 		],
 	},

@@ -1,0 +1,34 @@
+[
+  {
+    "experiment": "job_role_eval_2026-02-05",
+    "promptId": "job_role_v1",
+    "caseId": "case_001",
+    "latencyMs": 7410,
+    "llmCalls": 2,
+    "finalText": "Based on your background as a Developer specializing in Erlang and BEAM, and your interest in remote work within the real estate industry, here are some suitable job roles:\n\n1. **Real Estate Technology Developer**  \n   - Focuses on developing and maintaining software solutions tailored for real estate businesses, such as property management platforms, transaction systems, or customer portals. Your expertise in BEAM/Erlang can be valuable for building scalable, reliable backend systems.\n\n2. **Remote Software Engineer for Real Estate Platforms**  \n   - Works on developing or enhancing online real estate marketplaces, CRM systems, or transaction management tools. Your skills can contribute to creating robust backend services for these platforms.\n\n3. **PropTech Solutions Architect**  \n   - Designs and implements innovative technology solutions for real estate companies, integrating various systems and automating processes. Your technical background can help in creating efficient, scalable solutions.\n\n4. **Remote Backend Developer for Real Estate SaaS**  \n   - Develops backend services for SaaS products used by real estate agencies, brokers, or property managers. Your Erlang/BEAM expertise can ensure high availability and performance.\n\n5. **Technical Consultant for Real Estate Tech Startups**  \n   - Provides technical guidance and development support for startups or established companies in the real estate sector looking to leverage BEAM/Erlang technologies.\n\nWould you like me to find specific job postings matching these roles?"
+  },
+  {
+    "experiment": "job_role_eval_2026-02-05",
+    "promptId": "job_role_v1",
+    "caseId": "case_002",
+    "latencyMs": 7984,
+    "llmCalls": 3,
+    "finalText": "The current job postings do not explicitly mention Erlang or BEAM expertise, but they do highlight roles in backend development, cloud, and scalable system design, which are relevant to your skills. \n\nWould you like me to continue searching for more specialized roles explicitly mentioning Erlang or BEAM, or do you want to explore these broader backend roles that are remote-first?"
+  },
+  {
+    "experiment": "job_role_eval_2026-02-05",
+    "promptId": "job_role_v2",
+    "caseId": "case_001",
+    "latencyMs": 5832,
+    "llmCalls": 2,
+    "finalText": "Based on your expertise as a Developer specializing in Erlang and BEAM, and your interest in remote work within the real estate industry, here are some suitable job roles:\n\n1. **Remote BEAM Developer / Erlang Developer in Real Estate Tech**: Many real estate companies are adopting advanced technology solutions, including distributed systems and scalable backend services, which align well with Erlang and BEAM expertise. Roles may involve developing or maintaining real estate platforms, property management systems, or transaction processing systems.\n\n2. **Remote Software Engineer / Backend Developer for Real Estate Platforms**: Focused on building or enhancing online property listings, transaction management, or customer relationship management (CRM) systems, leveraging your Erlang/BEAM skills for scalable and reliable backend solutions.\n\n3. **Remote DevOps Engineer for Real Estate Tech Companies**: Utilizing your knowledge of BEAM and containerization (Docker, cloud technologies) to optimize deployment, scalability, and reliability of real estate applications.\n\n4. **Remote Technical Consultant for Real Estate Software Solutions**: Providing expertise on BEAM/Erlang-based systems, helping real estate firms implement or migrate their backend infrastructure.\n\n5. **Remote Product Developer for Real Estate SaaS Platforms**: Contributing to the development of SaaS products tailored for real estate agencies, property management, or investment firms, with a focus on scalable backend architecture.\n\nThese roles align with your technical skills and your desire to work remotely in the real estate sector, leveraging your expertise in Erlang and BEAM to support innovative and scalable real estate technology solutions."
+  },
+  {
+    "experiment": "job_role_eval_2026-02-05",
+    "promptId": "job_role_v2",
+    "caseId": "case_002",
+    "latencyMs": 6272,
+    "llmCalls": 3,
+    "finalText": "It appears that the current available job postings do not specifically target Erlang or BEAM technologies for remote roles. The listings are more focused on BI, general software engineering, and cellular engineering roles. \n\nIf you're open to broader backend or distributed systems roles that may involve Erlang/BEAM, I recommend keeping an eye on specialized job boards or communities dedicated to Erlang and BEAM development for more targeted opportunities."
+  }
+]

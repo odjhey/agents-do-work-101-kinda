@@ -48,13 +48,12 @@ const omniModelChatGptLlm = chatGptModel;
 const omniModelWithTools = omniModelChatGptLlm.bindTools(tools);
 
 const userIdent: GraphNode<typeof State> = async (state) => {
-	// In a real-world scenario, this could fetch user data from a database
-	// For this example, we'll return a static user identity
+	// Do nothiing for now, we off-loaded setting identity info outside the graph, before invoke
 	return {
-		userIdentity: {
-			name: "Alice",
-			designation: "Developer - Erlang and BEAM",
-		},
+		// userIdentity: {
+		// 	name: "Alice",
+		// 	designation: "Developer - Erlang and BEAM",
+		// },
 	};
 };
 
