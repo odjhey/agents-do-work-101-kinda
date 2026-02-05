@@ -20,7 +20,7 @@ See the `package.json` scripts
 
 ## Structure
 
-- `src/` - Agent graph
+- `src/` - Agent graph + `/api`
 - `rag/` - Vector DB setup
 - `eval/` - Evaluation scripts
 - `infra/` - Docker compose files
