@@ -13,6 +13,12 @@ export default defineConfig(({ mode }) => {
 			allowedHosts: env.ALLOWED_HOSTS
 				? env.ALLOWED_HOSTS.split(",")
 				: ["localhost"],
+			proxy: {
+				"/api": {
+					target: env.API_PROXY_TARGET || "http://localhost:3000",
+					rewrite: (path) => path.replace(/^\/api/, ""),
+				},
+			},
 		},
 		plugins: [react()],
 	};
