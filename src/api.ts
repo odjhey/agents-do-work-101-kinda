@@ -91,16 +91,44 @@ app.post("/agent00-stream", (c) => {
 					},
 				],
 			},
-			{ streamMode: "updates", ...config },
+			{ streamMode: "messages", ...config },
 		);
 
 		// // Pipe a readable stream.
 		// await stream.pipe(chunks);
+		// for await (const chunk of chunks) {
+		// 	await stream.write(
+		// 		new TextEncoder().encode(`${JSON.stringify(chunk)}\n`),
+		// 	);
+		// }
+
+		const encoder = new TextEncoder();
+		const send = async (obj: unknown) => {
+			await stream.write(encoder.encode(JSON.stringify(obj) + "\n"));
+		};
 		for await (const chunk of chunks) {
-			await stream.write(
-				new TextEncoder().encode(`${JSON.stringify(chunk)}\n`),
-			);
+			const message = Array.isArray(chunk) ? chunk[0] : (chunk as any);
+			const meta = Array.isArray(chunk) ? chunk[1] : undefined;
+
+			const msgType =
+				message?.getType?.() ??
+				message?._getType?.() ??
+				message?.type ??
+				"unknown";
+
+			// If you only care about AI tokens:
+			if (msgType === "ai") {
+				const text =
+					typeof message.content === "string"
+						? message.content
+						: Array.isArray(message.content)
+							? message.content.map((c: any) => c?.text ?? "").join("")
+							: "";
+
+				if (text) await send({ type: "token", text });
+			}
 		}
+		await send({ type: "done" });
 	});
 });
 
